@@ -1,0 +1,429 @@
+{% extends 'base.html' %} {% load static %} {% load transaction_status %} {% block style %} {% endblock style %} 
+{% block wallet_content %}
+
+<section class="section-blue wallet-wrapper container-fluid text-center">
+    <div class="row">
+        <div class="col-12 d-flex justify-content-center" style="position: relative">
+            <canvas id="myChart" style="max-width: 400px; max-height:400px; min-width:280px" width="400" height="400"></canvas>
+            <div style="position: absolute;top: 50%;max-width:100px; max-height:50px;text-overflow: ellipsis;">
+                <span style="font-size: 14pt;color: white;" id="total_usd">$1,234,567</span>
+            </div>
+        </div>
+        <div class="col-md-5 p-md-5 p-0 ">
+
+            <h1 class="white-font">Create Wallet</h1>
+            <form method="post" action="." class="col-12">
+                {% csrf_token %}
+                <div class="col-12">
+                    <div class="bit-details">
+                        <a class="btn btn-default btn-select">
+                            <input type="hidden" class="btn-select-input" id="id_convert" name="convert" />
+                            <span class="btn-select-value" value="2">
+                                <img src="/static/images/coins/ltc.png" value="ltc" width="40px">LiteCoin</span>
+                            <span class="btn-select-arrow fa fa-caret-down"></span>
+                            <ul id="convert_to" style="display: none;">
+                                <li value="0">
+                                    <img src="/static/images/coins/bitcoin.png" value="btc" width="40px">BitCoin
+                                </li>
+                                <li value="1">
+                                    <img src="/static/images/coins/eth.png" value="eth" width="40px">Ethereum
+                                </li>
+                                <li value="2" class="selected">
+                                    <img src="/static/images/coins/ltc.png" value="ltc" width="40px">LiteCoin
+                                </li>
+                                <li value="3">
+                                    <img src="/static/images/coins/xrp.png" value="xrp" width="40px">Ripple
+                                </li>
+                                <li value="4">
+                                    <img src="/static/images/coins/bch.png" value="bch" width="40px">BitCoinCash
+                                </li>
+                                <li value="5">
+                                    <img src="/static/images/coins/btg.png" value="btg" width="40px">BitCoinGold
+                                </li>
+                                <li value="6">
+                                    <img src="/static/images/coins/xlm.png" value="xlm" width="40px">Stellar
+                                </li>
+                                <li value="7">
+                                    <img src="/static/images/coins/xmr.png" value="xmr" width="40px">Monero
+                                </li>
+                            </ul>
+                        </a>
+                        <div class="act-bal col-12 p-0">
+                            <button type="submit" class="btn ex-now col-12 p-0">Create</button>
+                        </div>
+                    </div>
+            </form>
+            <!-- <div class="col-md-3">
+                <div class="act-bal">
+                    <button class="btn">CNY Balance</button>
+                    <h3><span>0.0</span> Account Balance</h3>
+                    <button class="send btn">Deposit</button> <button class="receive btn"> Receive</button>
+                    <button class="btn ex-now">Exchange Now</button>
+                </div>
+            </div> -->
+            <div class="activity-bal">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="activity">
+                                <h2>
+                                    <div class="act-top">
+                                        <img src="{% static 'img/top-arrow.png' %}"> </div>
+                                    Most Recent Activity
+                                </h2>
+                                <!-- <div class="qa-message-list" id="wallmessages">
+                        <div class="message-item">
+                            <div class="message-inner">
+                                <p class="d-inline-block">Transaction</p>
+                                <p class="d-inline-block"><b>06:21:2017</b></p>
+                                <p class="pull-right"><span class="status-send">Send</span> 0.045344 BTC </p>
+                            </div>
+                        </div>
+             
+                    </div> -->
+                                <div class="act-bottom">
+                                    <img src="{% static 'img/down-arrow.png' %}" style="    padding-top: 19px;"> </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            </div>
+
+
+        </div>
+
+        <div class="col-md-7 p-0 p-md-5">
+            <div class="my-balance col-12">
+                <h1 class="white-font">My Accounts</h1>
+                {% for obj in wallets %}
+                <div class="col-12">
+                    <div class="bal-wrapper d-flex align-items-center flex-wrap">
+                        <div class="col-12 col-lg-6 col-xl-3 d-flex justify-content-around align-items-center">
+                            <img src="{% static 'images/coins/' %}{{ obj.name }}.png" class="img-fluid img-40">
+                            <p class="d-inline-block text-uppercase">{{ obj.name }}</p>
+                        </div>
+                        <div class="col-12 col-lg-6 col-xl-3 float-left float-md-none">
+
+                            <span class=" pull-right ">Bal: {% get_bal_coin obj.name request.user.username %}</span>
+
+                        </div>
+                        <div class="col-5 col-lg-5 col-xl-2 p-1">
+                            <a href="{% url 'coins:sendcoin' obj.name %}" class="btn btn-default wallet-receive">
+                                <i class="fa fa-share-square"> </i> Send</a>
+                        </div>
+                        <div class="col-5 col-lg-5 col-xl-2 p-1">
+                            <button type="submit" class="btn btn-default wallet-receive" onclick="receive_coin('{{request.user}}', '{{obj.name}}', {{ forloop.counter}})">
+                                <!-- data-toggle="modal" data-target="#{{ obj.name }}{{ forloop.counter}}" -->
+                                <i class="fa fa-qrcode"> </i> Receive</button>
+                        </div>
+                        <div class="col-2 col-lg-2 col-xl-2 p-1">
+                            <a href="{% url 'coins:send2vault' obj.name %}" class="btn btn-default wallet-receive-vault">
+                                <i class="fa fa-shield"> </i>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <!-- Button trigger modal -->
+
+
+                {% endfor %}
+
+                <!-- Modal -->
+                <div class="modal fade col-12" id="coin-modal" tabindex="-1" role="dialog" aria-labelledby="#CoinTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content text-center">
+                            <div class="d-none d-md-block modal-header text-center">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h3 class="modal-title text-capitalize" id="LongTitle"> Your
+                                    <span class="text-uppercase" id="coin_name"></span> Wallet Address</h3>
+                            </div>
+                            <div class="col-12 d-md-none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h5 class="modal-title text-capitalize" id="LongTitle"> Your
+                                    <span class="text-uppercase" id="coin_name1"></span> Wallet Address</h5>
+
+                            </div>
+                            <div class="modal-body text-center">
+                                <img id="qr-chart" src="" + class="col-8 img-fluid"></img>
+
+                                <div class="col-12 wallet-address-span">
+                                    <span class="col-10" style="word-wrap:break-word;" id="coin_addr_input"></span>
+
+                                    <a href='' onclick="return false;" data-toggle="tooltip" data-placement="left" title="copied" class="btn1 col-2 tooltipped-se"
+                                        data-clipboard-target="#coin_addr_input">
+                                        <i class="fa fa-clone"> </i>
+                                    </a>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+
+                                <p>
+                                    <strong>
+                                        send only
+                                        <span id="coin_name2" class="text-uppercase"></span> to this address.</strong> Sending any other altcoin, will result in permanent
+                                    loss.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- vault -->
+                <div class="col-12">
+                    <a type="submit" href="{% url 'coins:myvault' %}" class="btn btn-default wallet-vault">
+                        <i class="fa fa-shield"> </i>&emsp; Access Vault</a>
+                </div>
+
+                <!-- vault -->
+
+
+            </div>
+        </div>
+</section>
+
+{% endblock %} {% block script %}
+<script src="{% static 'js/Chart.bundle.js' %}"></script>
+<script src="{% static 'js/ChartLabel.min.js' %}"></script>
+<script>
+    function call_ajax(temp_url, temp_coin_name, temp_coin_bal) {
+        var usd_price;
+        $.ajax({
+            dataType: "json",
+            url: temp_url,
+            success: function (data) {
+                datatochart(data.price_usd, temp_coin_name, temp_coin_bal)
+            }
+        });
+    }
+</script>
+<script>
+    var coin_data = [];
+    var coin_label = [];
+    var coin_bal = [];
+    var sum = 0;
+    var flag = 0;
+    function datatochart(price_usd, temp_coin_name, temp_coin_bal) {
+        if (flag == 0) {
+            if (temp_coin_bal > 0) {
+                flag = 1;
+            }
+        }
+        usd_eq = (price_usd * temp_coin_bal).toFixed(2);
+        coin_data.push(usd_eq);
+        coin_label.push(temp_coin_name);
+        coin_bal.push(temp_coin_bal);
+        finalgraph(coin_data, coin_label, coin_bal, flag);
+        sum = sum + parseInt(usd_eq);
+        $('#total_usd').text(numeral(sum).format('$0,0.00'));
+    }
+</script>
+<script>
+    {% for obj in wallets %}
+    var temp_coin_name = "{{obj.name}}";
+    temp_coin_name = temp_coin_name.toUpperCase();
+    var temp_url = "https://coincap.io/page/" + temp_coin_name;
+    var cur_coin_bal = {% get_bal_coin obj.name request.user.username %};
+    var usd_price = call_ajax(temp_url, temp_coin_name, cur_coin_bal);
+    {% endfor %}
+</script>
+
+<script>
+    function finalgraph(coin_data, coin_label, coin_bal, flag) {
+
+        if (flag == 0) {
+            coin_data = [1];
+            coin_label = ['Empty'];
+            coin_bal = ['0'];
+        }
+
+        var ctx = document.getElementById("myChart");
+        var myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [
+                    {
+                        data: coin_data,
+                        backgroundColor: [
+                            'rgba(244,193,13, 1)',
+                            'rgba(219,50,54, 1)',
+                            'rgba(72,133,237, 1)',
+                            'rgba(60,186,84, 1)',
+                            'rgba(244,193,13, 1)',
+                            'rgba(219,50,54, 1)',
+                            'rgba(72,133,237, 1)',
+                        ],
+                        borderColor: [
+                            'rgba(244,193,13, 1)',
+                            'rgba(219,50,54, 1)',
+                            'rgba(72,133,237, 1)',
+                            'rgba(60,186,84, 1)',
+                            'rgba(244,193,13, 1)',
+                            'rgba(219,50,54, 1)',
+                            'rgba(72,133,237, 1)',
+                        ], hoverBackgroundColor: [
+                            'rgba(244,193,13, 0.7)',
+                            'rgba(219,50,54, 0.7)',
+                            'rgba(72,133,237, 0.7)',
+                            'rgba(60,186,84, 0.7)',
+                            'rgba(244,193,13, 0.7)',
+                            'rgba(219,50,54, 0.7)',
+                            'rgba(72,133,237, 0.7)',
+                        ],
+                        label: 'Dataset 1'
+                    },
+                    {
+                        data: coin_bal,
+                        backgroundColor: [
+                            random_rgba()
+                        ],
+                        borderColor: [
+                            random_rgba()
+                        ],
+                        hidden: true,
+                        label: 'Dataset 1'
+                    },
+
+
+                ],
+                labels: coin_label,
+            },
+            options: {
+                responsive: true,
+                legend: false,
+                pieceLabel: {
+                    render: 'label',
+                    fontColor: 'white',
+                    fontSize: 16,
+                }, elements: {
+                    center: {
+                        text: '90%',
+                        color: '#FF6384', // Default is #000000
+                        fontStyle: 'Arial', // Default is Arial
+                        sidePadding: 20 // Defualt is 20 (as a percentage)
+                    }
+                },
+                title: {
+                    display: true,
+                    text: ''
+                },
+                animation: {
+                    animateScale: true,
+                    animateRotate: true
+                }, tooltips: {
+                    callbacks: {
+                        title: function (tooltipItem, data) {
+                            return data['labels'][tooltipItem[0]['index']];
+                        },
+                        label: function (tooltipItem, data) {
+                            return '' + data['datasets'][1]['data'][tooltipItem['index']] + '';
+                        },
+                        afterLabel: function (tooltipItem, data) {
+                            if (flag != 0) {
+                                return '($' + data['datasets'][0]['data'][tooltipItem['index']] + ')';
+                            }
+                        }
+                    },
+                    backgroundColor: '#FFF',
+                    titleFontSize: 16,
+                    titleFontColor: '#0066ff',
+                    bodyFontColor: '#000',
+                    bodyFontSize: 14,
+                    displayColors: false
+                }
+            },
+            hover: {
+                onHover: function (data) {
+                    // console.log(data);
+                }
+            }
+        });
+
+
+    }
+
+</script>
+
+<script>
+    function random_rgba() {
+        var o = Math.round, r = Math.random, s = 255;
+        return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + r().toFixed(1) + ')';
+    }
+</script>
+
+
+<script src="{% static 'js/clipboard.min.js' %}"></script>
+<script>
+    $('.btn1').tooltip({
+        trigger: 'click',
+        placement: 'bottom'
+    });
+
+
+    new Clipboard('.btn1');
+
+</script>
+<script>
+    $.ajax({
+        dataType: "json",
+        url: "https://coincap.io/front",
+        success: function (data) {
+
+            for (obj in data) {
+                if (data[obj].short == "ETH") {
+                    $('#eth-usd').text(data[obj].price);
+                }
+
+            }
+        }
+    });
+
+</script>
+<script>
+    function modal_loading(currency){
+        $("#coin_name").text(currency);
+        $("#coin_name1").text(currency);
+        $("#coin_name2").text(currency); 
+        $('#qr-chart').addClass('blink');
+        $('#coin_addr_input').addClass('blink');
+        $("#coin_addr_input").text("Creating a new address, please wait.");
+        $("#qr-chart").attr("src", "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=dummydata");               
+        $("#coin-modal").modal("show")
+
+    }
+</script>
+<script>
+    function receive_coin(user, currency, counter) {
+        modal_loading(currency);
+
+        $.ajax({
+            type: 'POST',
+            dataType: "json",
+            url: {% url 'coins:newaddr' %},
+            data: {
+                'currency': currency,
+                'user': user,
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+            },
+            success: function (data) {
+                console.log(data);
+                $("#coin_name").text(currency);
+                $("#coin_name1").text(currency);
+                $("#coin_name2").text(currency);
+                $('#qr-chart').removeClass('blink');
+                $('#coin_addr_input').removeClass('blink');
+                $("#qr-chart").attr("src", "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + data.addr);
+                $("#coin_addr_input").text(data.addr);
+
+            }
+        });
+    }
+</script> {% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base_signup.html' %} {% load static %} {% block content %}
+
+<section class="col-12">
+	<div class="container">
+		<div class="row mt-5">
+
+			<div class="col-sm-6 offset-sm-3 text-center mt-5 mb-5">
+				<div style="color: red;">{{ error }}</div>
+				<form class="contact-form columns_padding_10" method="post" action="./">
+					{% csrf_token %}
+					<div class="">
+						<div class="form-group ">
+							<input type="tel" size="30" value="" name="phone_number" id="id_phone_number"  class="form-control login-input" placeholder="Mobile Number">
+						</div>
+					</div>
+					<div align="center" class="">
+						<div class="contact-form-submit topmargin_20">
+							<button type="button" onclick="sendData();" class="btn btn-secondary exchange-next">Send OTP</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<!--.row -->
+	</div>
+	<!--.container -->
+</section>
+
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    $("#id_phone_number").intlTelInput();
+    function sendData(){
+    	value = $("#id_phone_number").val()
+    	$("#id_phone_number").intlTelInput("setNumber", "+"+$("#id_phone_number").intlTelInput("getSelectedCountryData").dialCode+value);
+    	$("form").submit();
+    }
+
+</script>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="col-12 pad0 slide-bg" style="background-image: url({% static 'images/newyork.jpg' %}); background-size: cover;
+background-attachment: fixed;
+background-position: center;
+background-repeat: no-repeat;
+background-size: cover; ">
+
+
+
+
+	<section class="col-12 mt-5">
+		<div class="container-fluid text-center">
+			<div class="row pb-5">
+				<form name="signup-form" class="col-sm-6 offset-sm-3 text-center contact-form  bg-transparent-cover"
+				 method="post" action="./">
+					<div class=" col-12  col-md-6 offset-md-3 white-font  ">
+						<h1 class="">Sign up</h1>
+						<div class="breadcrumbs-dark">
+							<span>Home</span>
+							<span>/</span>
+							<a href="">
+								<span>Sign up</span>
+							</a>
+						</div>
+					</div>
+					{% csrf_token %} {% for field in form %}
+					<div class="col-12">
+						{% if field.errors%}
+						<div class="form-field-errors text-left col-sm-10 offset-sm-1 no-list" style="color: red;">
+							{{ field.errors }}
+							<span class="help no-list">{{ field.help_text|safe }}</span>
+						</div>
+						{% endif %}
+						<div class="col-sm-10 offset-sm-1 text-justify">
+							<div class="form-group bottommargin_0">
+								{% if field.field.widget.input_type == 'password' %}
+								<input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" id="{{field.id_for_label}}" class="form-control signup-input"
+								 placeholder="{{field.label}}" value=""> {% elif field.field.widget.input_type == 'checkbox'%}
+								<div class="row d-flex  justify-content-between align-items-center">
+									<div class="col-9">
+										<span>Enable Two 2Factor Authentication</span>
+									</div>
+									<div class="col-3">
+										<label class="switch">
+											<input type="checkbox" name="{{ field.html_name }}" id="{{field.id_for_label}}" class="form-control signup-input" placeholder="{{field.label}}"
+											 value="{{ field.choice_value}}" {% if enable %}checked="checked" {% endif %}>
+											<span class="slider round"></span>
+										</label>
+									</div>
+								</div>
+
+								{% else %}
+								<input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" id="{{field.id_for_label}}" class="form-control signup-input"
+								 placeholder="{{field.label}}" value="{{ field.value|default_if_none:''}}"> {% endif%}
+
+							</div>
+							<!-- {% if field.help_text %}
+					<p class="help ">{{ field.help_text|safe }}</p>
+					{% endif %} -->
+						</div>
+					</div>
+
+					{% endfor %}
+					<div class="col-sm-10 offset-sm-1">
+						<div class="form-group bottommargin_0">
+							<div class="g-recaptcha d-flex justify-content-center" data-sitekey="6LdEcUIUAAAAAOdzadXa7dD9wVAs-g-AtegbLlM0"></div>
+						</div>
+					</div>
+					<div class="col-sm-12 text-center">
+						<button type="button" name="contact_submit" onclick="validateForm()" class="btn  btn-secondary exchange-next">Sign up</button>
+
+					</div>
+					<div class="col-sm-12 text-center">
+						<a href="{% url 'auth:login' %}" class="mt-5 col-12 white-font">Already exist? Login</a>
+					</div>
+				</form>
+			</div>
+			<!--.row -->
+		</div>
+		<!--.container -->
+	</section>
+</div>
+<script type="text/javascript">
+	function validateForm() {
+		var recaptcha = document.forms["signup-form"]["g-recaptcha-response"].value;
+		if (recaptcha == "") {
+			$("#form-error").text("Recaptcha Failed");
+		} else {
+			$("form").submit();
+		}
+	}
+</script> {% endblock %}

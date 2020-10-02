@@ -1,0 +1,11 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<section class="col-12">
+
+			<div class="col-sm-6 offset-sm-3 text-center ">
+				<img src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl={{address}}"></img>
+				<h3> Please pay to the following address from your wallet</h3>
+				<h4>{{ address }}</h4>
+            </div>
+
+</section>
+{% endblock %}

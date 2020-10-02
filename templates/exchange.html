@@ -1,0 +1,348 @@
+{% extends 'base.html' %} {% load static %} {% block style %}
+
+<link rel="stylesheet" href="{% static 'css/piechart.css' %}"> {% endblock %} {% block content %}
+
+
+
+
+<section class="section-blue container-fluid white-font">
+	<div class="p-1 p-md-5">
+
+		<div class="clearfix"></div>
+
+	</div>
+
+
+	<div class="exchange-now">
+		<div class="container ">
+			<div class="row" style="margin:0px">
+				<div class="col-md-5 sync">
+					<h2>Exchange</h2>
+
+					<a class="btn btn-default btn-select">
+						<input type="hidden" class="btn-select-input" name="" value="" />
+						<span class="btn-select-value" value="0">BTC</span>
+						<span class='btn-select-arrow fa fa-caret-down'></span>
+						<ul id="convert_from">
+							<li value="0" class="selected">
+								<img src="/static/images/coins/bitcoin.png" width="40px" />BitCoin</li>
+							<li value="1">
+								<img src="/static/images/coins/eth.png" width="40px" />Ethereum</li>
+							<li value="2">
+								<img src="/static/images/coins/ltc.png" width="40px" />LiteCoin</li>
+							<li value="3">
+								<img src="/static/images/coins/xmr.png" width="40px" />Monero</li>
+							<li value="4">
+								<img src="/static/images/coins/bch.png" width="40px" />BitCoinCash</li>
+							<li value="5">
+								<img src="/static/images/coins/btg.png" width="40px" />BitCoinGold</li>
+						</ul>
+					</a>
+
+
+					<div class="row btn-exchange-input-box-top">
+						<div class="col-6">
+							<input type="text" value="1" id="convert_amount" class="input-bit" />
+						</div>
+						<div class="col-6" align="right">
+							<span class="from_cur" />
+						</div>
+					</div>
+					<div class="row btn-exchange-input-box-bottom">
+						<div class="col-6">
+							<span id="from_rate"></span>
+						</div>
+						<div class="col-6" align="right">
+							USD
+						</div>
+					</div>
+				</div>
+				<div class="col-md-2 text-center d-flex align-items-center justify-content-center p-5">
+					<img src="/static/img/sync.png">
+				</div>
+
+				<div class="col-md-5 ">
+					<h2>Receive</h2>
+
+					<a class="btn btn-default btn-select">
+						<input type="hidden" class="btn-select-input" id="" name="" value="" />
+						<span class="btn-select-value" value="2">Litecoin</span>
+						<span class='btn-select-arrow fa fa-caret-down'></span>
+						<ul id="convert_to">
+							<li value="0">
+								<img src="/static/images/coins/bitcoin.png" width="40px" />BitCoin</li>
+							<li value="1">
+								<img src="/static/images/coins/eth.png" width="40px" />Ethereum</li>
+							<li value="2" class="selected">
+								<img src="/static/images/coins/ltc.png" width="40px" />LiteCoin</li>
+							<li value="3">
+								<img src="/static/images/coins/xmr.png" width="40px" />Monero</li>
+							<li value="4">
+								<img src="/static/images/coins/bch.png" width="40px" />BitCoinCash</li>
+							<li value="5">
+								<img src="/static/images/coins/btg.png" width="40px" />BitCoinGold</li>
+						</ul>
+					</a>
+					<div class="row btn-exchange-input-box-top">
+						<div class="col-sm-6">
+							<input type="text" id="converted_amount" class="input-bit" />
+						</div>
+						<div class="col-sm-6" align="right">
+							<span class="to_cur" />
+						</div>
+					</div>
+					<div class="row btn-exchange-input-box-bottom">
+						<div class="col-6">
+							<span id="to_rate"></span>
+						</div>
+						<div class="col-6" align="right">
+							USD
+						</div>
+					</div>
+				</div>
+
+
+
+				<div class="col-md-5 ">
+					<div class="bit-exchange-value-left">
+						<div class="row">
+
+							<div class="col-9 float-right">
+								<h4>You are exchanging</h4>
+								<p>
+									<span class="from_cur" />
+								</p>
+								<p>4.75 USD</p>
+							</div>
+
+							<div class="col-3 d-flex align-items-center ">
+								<img id="from_cur_img" src="/static/img/coins/BitCoin.png" class="img-fluid">
+							</div>
+
+						</div>
+					</div>
+				</div>
+				<div class="col-md-2 text-center d-flex align-items-center justify-content-center p-5">
+					<img src="/static/img/right-arrow.png">
+				</div>
+
+
+
+				<div class="col-md-5 ">
+					<div class="bit-exchange-value-right">
+						<div class="row">
+
+							<div class="col-3 d-flex align-items-center ">
+								<img id="from_cur_img" src="/static/img/coins/LiteCoin.png" class="img-fluid">
+							</div>
+							<div class="col-9 float-left">
+								<h4>You are receiving</h4>
+								<p>
+									<span class="from_cur" />
+								</p>
+								<p>4.75 USD</p>
+							</div>
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<div align="center">
+				<button class="btn btn-exchange mb-3" type="submit" onclick="window.location=''">Exchange now</button>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- successmodal -->
+	<div class="modal fade col-12" id="success_modal" tabindex="-1" role="dialog" aria-labelledby="#{{ currency }}_modalTitle"
+	 aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content text-center font-dark">
+				<div class="d-none d-md-block modal-header text-center">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h3 class="modal-title text-capitalize font-dark" id="">
+						Notification </h3>
+				</div>
+				<div class="col-12 d-md-none">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h5 class="modal-title text-capitalize" id="">
+						Notification</h5>
+
+				</div>
+				<div class="modal-body text-center">
+					<span id="success_msg">
+
+					</span>
+				</div>
+				<div class="modal-footer">
+					<div class="col-12 text-center">
+						<a href="#" class="btn btn-info" data-dismiss="modal">Close</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- endmodal -->
+
+</section>
+
+
+{% endblock %} {% block script %}
+<script>
+	$(document).ready(function () {
+		from = check_coin($('#convert_from').find("li.selected").val())
+		to = check_coin($('#convert_to').find("li.selected").val())
+		from_usd = check_rate(from, 'from_rate');
+		to_usd = check_rate(to, 'to_rate');
+	});
+
+	function check_coin(x) {
+		if (x == 0) { return 'BTC' }
+		else if (x == 1) { return 'ETH' }
+		else if (x == 2) { return 'LTC' }
+		else if (x == 3) { return 'XMR' }
+		else if (x == 4) { return 'BCH' }
+		else (x == 5)
+		{
+			return 'BTG'
+		}
+	}
+	$('#convert_from').click(function (e) {
+		setTimeout(function () {
+			from = check_coin($('#convert_from').find("li.selected").val())
+			to = check_coin($('#convert_to').find("li.selected").val())
+			from_usd = check_rate(from, 'from_rate');
+			to_usd = check_rate(to, 'to_rate');
+			check_coins(from, to);
+		}, 100);
+	})
+	$('#convert_to').click(function (e) {
+		setTimeout(function () {
+			from = check_coin($('#convert_from').find("li.selected").val())
+			to = check_coin($('#convert_to').find("li.selected").val())
+			from_usd = check_rate(from, 'from_rate');
+			to_usd = check_rate(to, 'to_rate');
+			check_coins(from, to);
+		}, 100);
+	})
+
+	function check_coin(x) {
+		if (x == 0) { return 'BTC' }
+		else if (x == 1) { return 'ETH' }
+		else if (x == 2) { return 'LTC' }
+		else if (x == 3) { return 'XMR' }
+		else if (x == 4) { return 'BCH' }
+		else (x == 5)
+		{
+			return 'BTG'
+		}
+	}
+
+
+	function check_coins(from, to) {
+		if (from == to) {
+			$("#success_msg").text("Please select a different coin");
+			$("#success_modal").modal("show")
+		}
+	}
+
+	function check_rate(coin, id) {
+		$.ajax({
+			dataType: "json",
+			url: "https://coincap.io/front",
+			success: function (data) {
+				for (obj in data) {
+					if (data[obj].short == coin) {
+						$('#' + id).text(data[obj].price);
+						return data[obj].price;
+					}
+				}
+
+			}
+		})
+	}
+</script>
+<script type="text/javascript">
+	convertWidget1($('#convert_to').find("li.selected").val());
+	$('#convert_from li').click(function (e) {
+		convertWidget2(e.target.value);
+
+	})
+	$('#convert_to li').click(function (e) {
+		convertWidget1(e.target.value);
+	})
+
+	$('#convert_amount').keyup(function () {
+		convertWidget1($('#convert_to').find("li.selected").val());
+
+
+	})
+
+	function convertWidget1(convert_to) {
+		convert_from = $('#convert_from').find("li.selected").val()
+		amount = $('#convert_amount').val()
+		$.ajax({
+			type: "POST",
+			url: "{% url 'coins:exchange_rate' %}",
+			data: {
+				'from': convert_from,
+				'to': convert_to,
+				'amount': amount,
+				csrfmiddlewaretoken: '{{ csrf_token }}'
+			},
+			success: function (data) {
+				$("#converted_amount").attr({
+					'value': data.result
+				});
+				from_text = $('#convert_from').find("li.selected").text()
+				to_text = $('#convert_to').find("li.selected").text()
+				$(".from_cur").text(from_text)
+				$(".to_cur").text(to_text)
+				$("#from_cur_img").attr({
+					"src": "/static/img/coins/" + from_text + ".png"
+				})
+				$("#to_cur_img").attr({
+					"src": "/static/img/coins/" + to_text + ".png"
+				})
+
+			}
+		})
+	}
+
+	function convertWidget2(convert_from) {
+		convert_to = $('#convert_to').find("li.selected").val()
+		amount = $('#convert_amount').val()
+		$.ajax({
+			type: "POST",
+			url: "{% url 'coins:exchange_rate' %}",
+			data: {
+				'from': convert_from,
+				'to': convert_to,
+				'amount': amount,
+				csrfmiddlewaretoken: '{{ csrf_token }}'
+			},
+			success: function (data) {
+				$("#converted_amount").attr({
+					'value': data.result
+				});
+				from_text = $('#convert_from').find("li.selected").text()
+				to_text = $('#convert_to').find("li.selected").text()
+				$(".from_cur").text(from_text)
+				$(".to_cur").text(to_text)
+				$("#from_cur_img").attr({
+					"src": "/static/img/coins/" + from_text + ".png"
+				})
+				$("#to_cur_img").attr({
+					"src": "/static/img/coins/" + to_text + ".png"
+				})
+
+			}
+		})
+	}
+</script> {% endblock %}

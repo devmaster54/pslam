@@ -1,0 +1,195 @@
+{% extends 'base.html' %} {% load static %} {% load transaction_status %} {% block style %} {% endblock style %}
+<div></div>
+{% block wallet_content %}
+<section class="section-blue wallet-wrapper container-fluid text-center">
+    <div class="row">
+        <div class="col-md-6 offset-md-3 text-center white-font">
+
+            <div class="col-12 d-flex justify-content-center align-items-center pb-3">
+                <img src="/static/images/coins/{{currency}}.png" class="img-fluid img-80">
+                <h1 class="d-inline-block text-capitalize white-font ">&emsp; Your {{currency}} Trust Vault details </h1>
+            </div>
+
+            <div class="bal-wrapper d-flex align-items-center flex-wrap col-10 offset-1 mt-2">
+                <div class="col-12 col-md-6 d-flex justify-content-start align-items-center">
+                    <img src="/static/images/coins/{{currency}}.png" class="img-fluid img-40">
+                    <p class="d-inline-block text-uppercase">{{currency}}</p>
+                </div>
+                <div class="col-12 col-md-6 float-left float-md-none">
+                    <span class=" pull-right ">Bal: {% get_vault_balance request.user.username currency %}</span>
+                </div>
+            </div>
+            <form id="vault_amt_send">{% csrf_token %}
+                <h1>Amount to retieve from Vault</h1>
+                <div class="col-12 col-md-10 offset-md-1 mt-3">
+                    <input id="amt_from_vault" name="amt_from_vault" type="text" class="wallet-send-coin-amt" placeholder="Enter the Amount to retrieve"></input>
+               
+                </div>
+            </form>
+        </div>
+        <div class="col-12 text-center">
+
+            <button type="submit" class="btn btn-send-coin mb-3" onclick="validate_amt()">
+                Confirm</button>
+            <!-- data-toggle="modal" data-target="#{{ currency }}_modal" -->
+        </div>
+
+        <!-- modal -->
+        <div class="modal fade col-12" id="confirm_modal" tabindex="-1" role="dialog" aria-labelledby="#{{ currency }}_modalTitle"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content text-center">
+                    <div class="d-none d-md-block modal-header text-center">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h3 class="modal-title text-capitalize" id="">
+                            Confirm </h3>
+                    </div>
+                    <div class="col-12 d-md-none">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h5 class="modal-title text-capitalize" id="">
+                            Confirm</h5>
+
+                    </div>
+                    <div class="modal-body text-center">
+                        <span>
+                            <strong> You are about to retrieve your {{currency}} from vault.</strong> This make take a few minutes to 
+                            a two days depending upon network traffic
+                        </span>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="col-12 text-center">
+                            <a href="#" id="submit_amount" class="btn btn-send-coin mb-3">Confirm</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="modal fade col-12" id="error_modal" tabindex="-1" role="dialog" aria-labelledby="#{{ currency }}_modalTitle"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content text-center">
+                    <div class="d-none d-md-block modal-header text-center">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h3 class="modal-title text-capitalize" id="">
+                            Error </h3>
+                    </div>
+                    <div class="col-12 d-md-none">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h5 class="modal-title text-capitalize" id="">
+                            Error</h5>
+
+                    </div>
+                    <div class="modal-body text-center">
+                        <span id="error_msg">
+
+                        </span>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="col-12 text-center">
+                            <button class="btn btn-default" data-dismiss="modal" aria-label="Close">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- successmodal -->
+        <div class="modal fade col-12" id="success_modal" tabindex="-1" role="dialog" aria-labelledby="#{{ currency }}_modalTitle"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content text-center">
+                    <div class="d-none d-md-block modal-header text-center">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h3 class="modal-title text-capitalize" id="">
+                            Success </h3>
+                    </div>
+                    <div class="col-12 d-md-none">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h5 class="modal-title text-capitalize" id="">
+                            Success</h5>
+
+                    </div>
+                    <div class="modal-body text-center">
+                        <span id="success_msg">
+
+                        </span>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="col-12 text-center">
+                            <a href="{% url 'coins:wallets' %}" class="btn btn-default" >Close</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- endmodal -->
+
+
+    </div>
+</section>
+{% endblock wallet_content %} {% block script %}
+<script>
+    function validate_amt() {
+        amount = $("#amt_from_vault").val();
+        if (amount) {
+            $("#confirm_modal").modal("show");
+        }
+        else {
+            $("#error_msg").text("Please enter an amount greater than 0");
+            $("#error_modal").modal("show");
+        }
+    }
+</script>
+
+<script>
+    $('#submit_amount').click(function (e) {
+        e.preventDefault();
+        amount = $("#amt_from_vault").val();
+        if (amount) {
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'coins:retrievefromvault' currency|slugify %}",
+                data: $('#vault_amt_send').serialize(),
+                success: function (result) {
+                    if (result.success) {
+                    $("#confirm_modal").modal("hide");
+                    $("#success_msg").text("Request raised. Once the request is processed you will be notified");
+                    $("#success_modal").modal("show")
+                    }
+                    else{
+                        $("#confirm_modal").modal("hide");
+                        $("#error_msg").html(result.error +"<p>Please check your transaction details.</p>");
+                        $("#error_modal").modal("show");
+    
+                    }
+
+                },
+                error: function (result) {
+                    $("#confirm_modal").modal("hide");
+                    $("#error_msg").text("An error occured. Your request couldn't be processed because you have a pending request. For assistance or grieviences contact support");
+                    $("#error_modal").modal("show");
+
+                }
+            });
+        }
+        else {
+            $("#error_modal").modal("show")
+        }
+    });
+</script> {% endblock script %}

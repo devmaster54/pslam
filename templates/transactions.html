@@ -1,0 +1,128 @@
+{% extends 'base.html' %} {% load static %}{% load transaction_status %} {% block content %}
+<section class="col-12 section-blue">
+
+	<div class="col-12 col-md-8 offset-md-2 mt-5">
+		<div id="accordion_outer">
+			{% for currency in currencies %}
+			<div class=" bg-dark-blue mt-2">
+				<a href="" data-toggle="collapse" data-target="#collapse{{forloop.counter}}" aria-expanded="false" aria-controls="collapse{{forloop.counter}}">
+					<div class="card-header p-3 " id="heading{{forloop.counter}}">
+						<h5 class="m-0  white-font text-uppercase">
+								{{currency}}
+						</h5>
+					</div>
+				</a>
+
+				<div id="collapse{{forloop.counter}}" class="collapse " aria-labelledby="heading{{forloop.counter}}" data-parent="#accordion_outer">
+					<div class="card-body ">
+						<div class=" p-0">
+							<!-- transaction -->
+							<div id="accordion_inner">
+									{% if  ctx|rcv:currency %}
+									<h3 style="color:lightblue">Recieved</h3>
+									{% endif %}
+									{% for transaction in  ctx|rcv:currency|slice:":10" reversed %}
+									
+									<div class="card bg-dark-blue2 mt-2">
+										<a href="" data-toggle="collapse" data-target="#collapseinner{{forloop.parentloop.counter}}{{forloop.counter}}" aria-expanded="false" aria-controls="collapseinner{{forloop.parentloop.counter}}{{forloop.counter}}">
+											<div class="card-header p-3" id="headinginner{{forloop.parentloop.counter}}{{forloop.counter}}">
+												<h5 class="m-0  white-font">
+														{{transaction.txid}}
+												</h5>
+											</div>
+										</a>
+						
+										<div id="collapseinner{{forloop.parentloop.counter}}{{forloop.counter}}" class="collapse " aria-labelledby="headinginner{{forloop.parentloop.counter}}{{forloop.counter}}" data-parent="#accordion_inner">
+											<div class="card-body p-2">
+												<div class=" p-0">
+													<!-- inner -->
+													<div class="col-12  transaction_list d-flex flex-wrap ">
+														<span>Address : &emsp;</span>
+														<span class="word-break-all">{{transaction.address}}</span>
+													</div>
+													<div class="col-12  transaction_list d-flex flex-wrap ">
+														<span>Amount : &emsp;</span>
+														<span >{{transaction.amount}}</span>
+													</div>
+													<div class="col-12  transaction_list d-flex flex-wrap ">
+														<span>Confirmations : &emsp;</span>
+														<span class="word-break-all">{{transaction.confirmations}}</span>
+													</div>
+													<div class="col-12 transaction_list  d-flex flex-wrap ">
+														<span>TXid : &emsp;</span>
+														<span class="word-break-all">{{transaction.txid}} </span>
+													</div>
+													<div class="col-12  transaction_list d-flex flex-wrap ">
+														<span>Time : &emsp;</span>
+														<span class="word-break-all">{{transaction.time|unix_to_datetime}} </span>
+													</div>
+													<!-- end of inner -->
+												</div>
+						
+											</div>
+										</div>
+									</div>
+									{% endfor %}
+									
+									{% if  ctx|snd:currency %}
+									<h3 style="color:lightblue">Send</h3>
+									{% endif %}
+									{% for transaction in  ctx|snd:currency|slice:":10"  reversed  %}
+									
+									<div class="card bg-dark-blue2 mt-2">
+										<a href="" data-toggle="collapse" data-target="#collapseinnersnd{{forloop.parentloop.counter}}{{forloop.counter}}" aria-expanded="false" aria-controls="collapseinnersnd{{forloop.parentloop.counter}}{{forloop.counter}}">
+											<div class="card-header p-3" id="headinginnersnd{{forloop.parentloop.counter}}{{forloop.counter}}">
+												<h5 class="m-0  white-font">
+													{{transaction.txid}}
+												</h5>
+											</div>
+										</a>
+						
+										<div id="collapseinnersnd{{forloop.parentloop.counter}}{{forloop.counter}}" class="collapse " aria-labelledby="headinginnersnd{{forloop.parentloop.counter}}{{forloop.counter}}" data-parent="#accordion_inner">
+											<div class="card-body p-2">
+												<div class=" p-0">
+													<!-- inner -->
+													<div class="col-12  transaction_list d-flex flex-wrap ">
+														<span>Address : &emsp;</span>
+														<span class="word-break-all">{{transaction.address}}</span>
+													</div>
+													<div class="col-12  transaction_list d-flex flex-wrap ">
+														<span>Amount : &emsp;</span>
+														<span >{{transaction.amount}}</span>
+													</div>
+													<div class="col-12  transaction_list d-flex flex-wrap ">
+														<span>Confirmations : &emsp;</span>
+														<span class="word-break-all">{{transaction.confirmations}}</span>
+													</div>
+													<div class="col-12 transaction_list  d-flex flex-wrap ">
+														<span>TXid : &emsp;</span>
+														<span class="word-break-all">{{transaction.txid}} </span>
+													</div>
+													<div class="col-12  transaction_list d-flex flex-wrap ">
+														<span>Time : &emsp;</span>
+														<span class="word-break-all">{{transaction.time|unix_to_datetime}} </span>
+													</div>
+													<!-- end of inner -->
+												</div>
+						
+											</div>
+										</div>
+									</div>
+									{% endfor %}
+								</div>
+							<!-- end of transaction -->
+						</div>
+
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+
+
+<div class="p-5">
+<a href="{% url 'coins:transactionpdf' %}" class="btn btn-info">Generate full report</a>
+</div>
+</section>
+{% endblock content %}

@@ -1,0 +1,159 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="white-font col-12 p-0" style="background-image: url('/static/images/seaport.jpg');background-size: cover;
+background-attachment: fixed;
+background-position: center;
+background-repeat: no-repeat;
+background-size: cover; ">
+	<div class="col-12 bg-transparent-cover" style="">
+		<div class="col-sm-12 text-center">
+			<h1 class="text-capitalize">Welcome, {{request.user.first_name}}</h1>
+		</div>
+
+		<section class="col-12">
+
+			<h3 class="">Name: {{request.user.first_name}} {{request.user.last_name}}</h3>
+			<h3 class="">Email: {{request.user.email}}</h3>
+			<a href="{% url 'auth:logout' %}"> Logout </a>
+
+		</section>
+
+		<section class="col-12 text-center">
+			<!-- market_cap -->
+			<h3>CryptoCurrency Market Capitalizations</h3>
+
+			<!-- hanya muncul ketika md dan lg -->
+			<div class="d-none d-md-block col-md-10 offset-md-1">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Name</th>
+							<th>
+								<div class="pull-right">
+									Market Cap
+								</div>
+							</th>
+							<th>
+								<div class="pull-right">
+									Price
+								</div>
+							</th>
+							<th>
+								<div class="pull-right">
+									Circulating Supply
+								</div>
+							</th>
+							<th>
+								<div class="pull-right">
+									Volume (24h)
+								</div>
+							</th>
+						</tr>
+					</thead>
+
+					<tbody id="marketcap_tbody">
+
+					</tbody>
+
+				</table>
+			</div>
+
+			<!-- hanya muncul ketika sm dan xs -->
+			<div class="d-md-none d-lg-none d-xl-none bg-dark">
+				<div id="marketcap_tbody_small" class="p-5">
+
+				</div>
+			</div>
+
+			<!-- end market_cap -->
+
+
+
+		</section>
+	</div>
+</div>
+
+{% endblock %} {% block script %}
+<script type="text/javascript">
+	Number.prototype.numberFormat = function (decimals, dec_point, thousands_sep) {
+		dec_point = typeof dec_point !== 'undefined' ? dec_point : '.';
+		thousands_sep = typeof thousands_sep !== 'undefined' ? thousands_sep : ',';
+
+		var parts = this.toFixed(decimals).split('.');
+		parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousands_sep);
+
+		return parts.join(dec_point);
+	}
+</script>
+<script type="text/javascript">
+	// get list dari coinmarketcap
+	function getMarketCap() {
+
+		$.ajax({
+			url: 'https://api.coinmarketcap.com/v1/ticker/?limit=10',
+			success: function (response) {
+
+				$('tbody#marketcap_tbody').html('');
+
+				$.each(response, function (a, b) {
+
+					$('tbody#marketcap_tbody').append(
+						'<tr>' +
+						'    <td>' +
+						'        ' + b.rank +
+						'    </td>' +
+						'    <td>' +
+						'        ' + b.name +
+						'    </td>' +
+						'    <td align="right">' +
+						'        $ ' + parseFloat(b.market_cap_usd).numberFormat(1, ".", ",") +
+						'    </td>' +
+						'    <td align="right">' +
+						'        $ ' + parseFloat(b.price_usd).numberFormat(5, ".", ",") +
+						'    </td>' +
+						'    <td align="right">' +
+						'        ' + parseFloat(b.available_supply).numberFormat(1, ".", ",") + ' ' + b.symbol +
+						'    </td>' +
+						'    <td align="right">' +
+						'        $ ' + parseFloat(b['24h_volume_usd']).numberFormat(1, ".", ",") +
+						'    </td>' +
+						'</tr>'
+					);
+
+					$('div#marketcap_tbody_small').append(
+						'<div style="border-top: 1px solid #fff; padding: 10px auto; margin: 10px auto;">' +
+						'    <div class="pt5"><label>Rank</label>:<div>' + b.rank + '</div></div>' +
+						'    <div class="pt5"><label>Name</label>:<div>' + b.name + '</div></div>' +
+						'    <div class="pt5"><label>Market Cap</label>:<div>' + '$ ' + parseFloat(b.market_cap_usd).numberFormat(1,
+							".", ",") + '</div></div>' +
+						'    <div class="pt5"><label>Price</label>:<div>$' + parseFloat(b.price_usd).numberFormat(5, ".", ",") +
+						'</div></div>' +
+						'    <div class="pt5"><label>Circulating Supply</label>:<div>' + parseFloat(b.available_supply).numberFormat(
+							1, ".", ",") + ' ' + b.symbol + '</div></div>' +
+						'    <div class="pt5"><label>Volume (24h)</label>:<div>$' + parseFloat(b['24h_volume_usd']).numberFormat(1,
+							".", ",") + '</div></div>' +
+						'</div>'
+					);
+				});
+			}
+		});
+	}
+
+	(function () {
+		// atur menu
+		$('.n-menu_dashboard').addClass('active');
+		/* ambil data dari coinmarketcap */
+		getMarketCap();
+
+		// eksekusi semua crypto balance by interval dan juga data dari coinmarketcap
+		setInterval(function () {
+			getBtcBalance();
+
+
+
+
+			getMarketCap();
+		}, 120000);
+
+	})()
+</script> {% endblock %}

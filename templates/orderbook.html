@@ -1,0 +1,64 @@
+{% extends 'base.html' %} {% load static %} {% load transaction_status %} {% block style %}
+<link href="{% static 'css/datatables.css' %}">
+{% endblock style %}
+<div></div>
+{% block wallet_content %}
+<section class="section-blue wallet-wrapper container-fluid text-center">
+    <div class="row">
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="bg-dark-blue white-font">
+                <div class="p-2">
+                    <h4 class="">Sell Orders</h4>
+                </div>
+                <div class="oder-inner">
+                    <table class="table " id="sell_order">
+                        <thead>
+                            <tr>
+                                <th>Price</th>
+                                <th class="text-uppercase">COIN</th>
+                                <th>USD</th>
+                            </tr>
+                        </thead>
+                        <tbody class="font9">
+                            <tr>
+                                <td>6939.799999</td>
+                                <td>0.52790513</td>
+                                <td>25000.527905</td>
+                            </tr>
+                            <tr class="bg-dark-blue2">
+                                <td>6939.799999</td>
+                                <td>0.52790513</td>
+                                <td>25000.527905</td>
+                            </tr>
+                            <tr>
+                                <td>6939.799999</td>
+                                <td>0.52790513</td>
+                                <td>25000.527905</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+
+        </div>
+    </div>
+</section>
+{% endblock wallet_content %} {% block script %}
+
+<script src="{% static 'js/highstock.js' %}"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/maps/modules/map.js"></script> 
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script>
+        $(document).ready( function () {
+            $('#sell_order').DataTable();
+        } );
+</script>
+{% endblock script %}

@@ -1,0 +1,151 @@
+{% extends 'base.html' %} {% load static %} {% block style %} {% endblock %} {% block carousel%}
+
+<div class="col-12 text-center pt-5 px-5 pb-1">
+    <a href="" class="panel-heading accordion-toggle collapsed left" data-toggle="collapse" data-parent="#accordion1,#accordion2,#accordion3"
+        data-target="#collapseTwo">
+        <div id="bu2">
+            <img alt="" src="/static/images/badge/passphrase.png" class="img-fluid grayedout">
+        </div>
+    </a>
+</div>
+
+<div class="col-12 col-md-8 offset-md-2  pt-1 px-5 pb-5">
+    <strong>
+        <h2>Recovery Passphrase</h2>
+    </strong>
+
+    <p>Write down your Recovery Phrase and keep it somewhere very safe and secure. Your Recovery Phrase allows you or anyone
+        else with access to it, to restore your wallet and access your funds if you forget your password, or if our service
+        is unavailable.</p>
+
+
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#passphrasemodal">
+        Set Passphrase
+    </button>
+    <br>
+</div>
+
+
+<!-- modal -->
+<div class="modal fade multi-step" id="passphrasemodal" tabindex="-1" role="dialog" aria-labelledby="passphrasemodalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title step-1" data-step="1">Important!</h4>
+                <h4 class="modal-title step-2" data-step="2">Important!</h4>
+                <h4 class="modal-title step-3" data-step="3">Note down these words</h4>
+                <div class="m-progress">
+                    <div class="m-progress-bar-wrapper">
+                        <div class="m-progress-bar">
+                        </div>
+                    </div>
+                    <div class="m-progress-stats">
+                        <span class="m-progress-current">
+                        </span>
+                        /
+                        <span class="m-progress-total">
+                        </span>
+                    </div>
+                    <div class="m-progress-complete">
+                        Completed
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-body step step-1">
+                    <p>Do not store your Recovery Phrase on your computer or online. It is very important to keep your Recovery
+                        Phrase offline in a safe and private place. Anyone with access to your Recovery Phrase has access
+                        to your funds.</p>
+                </div>
+                <div class="modal-body step step-2">
+                    <p>Use a pen to legibly write down the following 12 words somewhere safe and private. It is important that
+                        you write down the words exactly as they appear and in that particular order.</p>
+                </div>
+                <div class="modal-body step step-3">
+                    <strong class="mt-2 mb-2 p-md-5">
+                        <h4>
+                            {% for key,value in mnemonic.items %}
+                            <span style="white-space: pre;">{{forloop.counter}}: {{value}}&emsp;&emsp;</span>
+                            {% endfor %}
+
+                        </h4>
+                    </strong>
+                </div>
+                <div class="modal-body step step-4 col-12">
+                    <p>Confirm the words</p>
+                    <form class="col-12 p-0" id="confirm_wordlist">
+                        {% csrf_token %} {% for num in rand_list %}
+                        <div class="col-12 p-1  d-flex flex-row flex-wrap  align-items-center">
+                            <span class="col-4 col-md-2 px-0">Word {{num}}: </span>
+                            <input type="text" name="word{{forloop.counter}}" class="form-control col-8 col-md-10" placeholder="Enter word {{num}}" value="">
+                            <input type="text" name="num{{forloop.counter}}" class="invisible h-0" value="{{num}}">
+                        </div>{% endfor %}
+                    </form>
+                   
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary step step-1" data-step="1" onclick="sendEvent('#passphrasemodal', 2)">Next</button>
+                <button type="button" class="btn btn-primary step step-2" data-step="2" onclick="sendEvent('#passphrasemodal', 1)">Back</button>
+                <button type="button" class="btn btn-primary step step-2" data-step="2" onclick="sendEvent('#passphrasemodal', 3)">Next</button>
+                <button type="button" class="btn btn-primary step step-3" data-step="3" onclick="sendEvent('#passphrasemodal', 2)">Back</button>
+                <button type="button" class="btn btn-primary step step-3" data-step="3" onclick="sendEvent('#passphrasemodal', 4)">Next</button>
+                <button type="button" class="btn btn-primary step step-4" data-step="4" onclick="sendEvent('#passphrasemodal', 3)">Back</button>
+                <button type="submit" class="btn btn-primary step step-4" data-step="4" onclick="word_submit();">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+
+
+
+
+{% endblock %} {% block script %}
+<script src="{% static 'js/multi-step-modal.js' %}"></script>
+<script>
+    sendEvent = function (sel, step) {
+        $(sel).trigger('next.m.' + step);
+    }
+</script>
+<script>
+    function word_submit() {
+        value = $("#id_phone_number").val();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'auth:mnemonicgen' %}",
+            data: $('#confirm_wordlist').serialize(),
+            dataType: 'json',
+            success: function (result) {
+                if (result.status == 'success'){
+                $("#passphrasemodal").modal('hide');
+                window.location = "{% url 'welcome' %}";
+            }
+                else{
+
+                $.notify({
+                    icon: 'fa fa-warning-sign',
+                    title: 'Alert',
+                    message: "Invalid sequence, please try again"
+                }, {
+                        animate: {
+                            enter: 'animated fadeInRight',
+                            exit: 'animated fadeOutRight'
+                        },
+
+                        type: 'danger',
+                        z_index:2000,
+
+                    });
+                }
+            },
+            error: function (result) {
+
+
+            }
+        });
+
+    }
+</script> {% endblock %}

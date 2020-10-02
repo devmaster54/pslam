@@ -1,0 +1,70 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="container-fluid login-bg">
+    <div class="row p-0 pt-5 p-md-5 bg-cover">
+
+					<div class="col-md-6 offset-md-3 text-center mb-5 p-md-5">
+						<div class="col-12 text-center pb-5">
+							<div class=" col-10 offset-1 col-md-6 offset-md-3 white-font ">
+								<h1 class="">Login</h1>
+								<div class="breadcrumbs-dark">
+									<span>Home</span>
+									<span>/</span>
+									<a href="">
+										<span>Login</span>
+									</a>
+								</div>
+							</div>
+						</div>
+						<div id="form-error" style="color: red;">{{ form.non_field_errors }}</div>
+						<form name="login-form" class="contact-form columns_padding_10" method="post" action="./">
+							{% csrf_token %}
+
+							<div class="col-12">
+								{% for field in form %} {% if field.errors%}
+								<div class="form-field-errors text-left col-sm-6 offset-sm-3 no-list" style="color: red;">
+									{{ field.errors }}
+									<span class="help no-list">{{ field.help_text|safe }}</span>
+								</div>
+								{% endif %}
+								<div class="col-sm-12 text-justify">
+									<div class="form-group bottommargin_0">
+										{% if field.field.widget.input_type == 'password' %}
+										<input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" id="{{field.id_for_label}}" class="form-control dark-blue-input"
+										    placeholder="{{field.label}}" value=""> {% else %}
+										<input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" id="{{field.id_for_label}}" class="form-control dark-blue-input"
+										    placeholder="{{field.label}}" value="{{ field.value|default_if_none:''}}"> {% endif%}
+
+									</div>
+	
+								</div>
+								{% endfor %}
+								<div class="col-12 text-center">
+
+									<div class="g-recaptcha d-flex justify-content-center" data-theme="dark" data-sitekey="6LdEcUIUAAAAAOdzadXa7dD9wVAs-g-AtegbLlM0"></div>
+								</div>
+
+								<div align="center" class="col-12 mt-3">
+									<div class="contact-form-submit topmargin_20">
+										<button type="button" onclick="validateForm()" class="btn ex-now ">Login</button>
+									</div>
+								</div>
+						</form>
+						<a href="{% url 'auth:password_reset'%}" class="white-font">Forgot password?</a>
+						</div>
+					
+
+
+		</div>
+
+	</div>
+	<script type="text/javascript">
+		function validateForm() {
+			var recaptcha = document.forms["login-form"]["g-recaptcha-response"].value;
+			if (recaptcha == "") {
+				$("#form-error").text("Recaptcha Failed");
+			} else {
+				$("form").submit();
+			}
+		}
+	</script>
+	{% endblock %}

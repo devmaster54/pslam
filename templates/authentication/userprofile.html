@@ -1,0 +1,41 @@
+{% extends 'base.html' %} {% load static %} {% block carousel%}
+<div class="container-fluid profile-bg">
+    <div class="row p-0 pt-5 p-md-5 bg-transparent-cover">
+
+    <div class="col-12 col-md-8 offset-md-2">
+        <form id="side-2" class="flip" action="" method="POST">
+            <div class="col-12  event-login-header text-center">
+               <h1>You're Almost There..</h1>
+            </div>
+            <div class="event-login pad20 p-sm-5 ">
+                {% for field in form %}
+                <div class="fieldWrapper mt-3">
+                    {% if field.errors%}
+                    <div class="form-field-errors">
+                        {{ field.errors }}
+                    </div>
+                    {% endif %} {% if field.help_text %}
+                    <p class="help">{{ field.help_text|safe }}</p>
+                    {% endif %}
+                    <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" id="{{field.id_for_label}}" 
+                    class="col-12 input-login dark-blue-input profile-input"placeholder="{{field.label}}" value="{{ field.value|default_if_none:''}}">
+
+
+                </div>
+
+                {% endfor %} {% csrf_token %}
+                <!-- <input id="id_email" type="text" class="col-12 input-login" placeholder="email">
+
+                        <input  id="id_phone" type="text" class="col-12 input-login" placeholder="phone">
+                        <input id="id_password"  type="password" class="col-12 input-login" placeholder="password">
+                        <input id="id_retype_password" type="password" class="col-12 input-login" placeholder="Renter-password"> -->
+                <input type="submit" class="col-12 btn ex-now mt-5" value="Update">
+
+            </div>
+        </form>
+    </div>
+
+    </div>
+
+</div>
+{% endblock %}

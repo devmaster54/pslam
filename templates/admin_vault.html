@@ -1,0 +1,137 @@
+{% extends 'base.html' %} {% load static %}{% load transaction_status %} {% block content %}
+<section class="col-12 section-blue">
+    <div class="col-12">
+        {% for obj in retrieverequests %}
+        <div class="col-12">
+            <div class="bal-wrapper d-flex align-items-center justify-content-around flex-wrap">
+                <div>
+                    <img src="{% static 'images/coins/' %}{{ obj.currency }}.png" class="img-fluid img-40">
+                    <span class="d-inline-block text-uppercase">{{ obj.currency }}</span>
+                </div>
+                <span class="d-inline-block ">{{obj.username}}</span>
+                <span class=" pull-right ">Bal: {% get_vault_balance obj.user.username obj.currency %}</span>
+                <span class="d-inline-block ">Requested: {{obj.amount}}</span>
+
+
+                <button class="btn btn-default wallet-receive" data-toggle="modal" data-target="#approve_form_modal{{forloop.counter}}">
+                    <i class="fa fa-shield"> </i> Approve</button>
+
+            </div>
+        </div>
+        <!-- modal -->
+        <div class="modal fade col-12" id="approve_form_modal{{forloop.counter}}" tabindex="-1" role="dialog" aria-labelledby="#approve_form_modal{{forloop.counter}}"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content text-center">
+                    <div class="d-none d-md-block modal-header text-center">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h3 class="modal-title text-capitalize">Confirm</h3>
+                    </div>
+                    <div class="col-12 d-md-none">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h5 class="modal-title text-capitalize">Confirm</h5>
+
+                    </div>
+                    <div class="modal-body text-center">
+
+                        <form id="approval_form" method="POST">
+                            {% csrf_token %}
+                            <input type="text" value="{{obj.user}}" name="user">
+                            <input type="text" value="{{obj.username}}" name="vaultusername">
+                            <input type="text" value="{{obj.currency}}" name="currency">
+                            <input type="text" value="{{obj.amount}}" name="amount">
+                            <input type="text" value="{% get_vault_balance obj.user.username obj.currency %}" name="balance" readonly>
+                        </form>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" onclick="approve_req()">Approve</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+          <!-- successmodal -->
+          <div class="modal fade col-12" id="success_modal" tabindex="-1" role="dialog" aria-labelledby="#{{ currency }}_modalTitle"
+          aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content text-center">
+                  <div class="d-none d-md-block modal-header text-center">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                      <h3 class="modal-title text-capitalize" id="">
+                          Notification </h3>
+                  </div>
+                  <div class="col-12 d-md-none">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                      <h5 class="modal-title text-capitalize" id="">
+                            Notification</h5>
+
+                  </div>
+                  <div class="modal-body text-center">
+                      <span id="success_msg">
+
+                      </span>
+                  </div>
+                  <div class="modal-footer">
+                      <div class="col-12 text-center">
+                          <a href="{% url 'coins:adminvaultrequest' %}" class="btn btn-default" >Close</a>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <!-- endmodal -->
+
+
+
+        {% endfor %}
+    </div>
+
+
+
+
+
+
+    <div class="p-5">
+    </div>
+</section>
+{% endblock content %} {% block script %}
+<script>
+    function approve_req() {
+        $.ajax({
+            type: "POST",
+            url: "{% url 'coins:vaultreqapprove' %}",
+            data: $('#approval_form').serialize(),
+            success: function (data) {
+                
+                if (data.success) {
+                $("#success_msg").text("Transfered to User.");
+                $("#approve_form_modal").modal("hide");
+                $("#success_modal").modal("show")
+                $('#successModal').on('hidden.bs.modal', function (e) {
+                    location.reload();
+                  })
+                }else{
+
+                $("#success_msg").html(data.error +"<p>Please check log for more information.</p>");
+                $("#success_modal").modal("show");
+                }
+            },
+            error: function (data) {
+                $("#success_msg").text("An error occured. Please try later.");
+                $("#success_modal").modal("show");
+
+            }
+        });
+    }
+
+
+</script> {% endblock script %}

@@ -1,0 +1,63 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<section class="">
+	<div class="p-1 p-sm-5">
+		<div class="row">
+			<div class="col-sm-6 text-center p-5 row">
+				<h2 class="exchange-confirm-font margin-center">You are converting from </h2> 
+				
+				<div class="col-5 col-md-5  text-center ">
+						
+						<img src="{% static 'img/coins/btc.png'%}" class="img-fluid">
+						<br>
+						<h3>btc</h3>
+				</div>
+				<div class="col-2 col-md-2 d-flex align-content-center mt-auto mb-auto flex-wrap text-center ">
+
+						<span class="fa fa-exchange exchangefa margin-center"></span>
+				</div>
+				<div class="col-5 col-md-5 text-center ">
+						<img src="{% static 'img/coins/ltc.png'%}" class="img-fluid">
+						<br>
+						<h3>ltc</h3>
+				</div>
+			</div>
+			<div class="col-sm-6 p-5 exchange-border-left">
+				<form class="contact-form row columns_padding_10 text-center" method="post" action="./">
+					<h1>Enter your {{ request.session.convert_to }} wallet address you like to transfer</h1>
+					{% if error %}
+					<p>{{error}}</p>{% endif %} {% csrf_token %}
+					<div class="col-sm-12">
+						<div class="form-group bottommargin_0">
+							<label for="name">
+								<span class="required">Address*</span>
+							</label>
+							<input type="text" aria-required="true" size="30" value="" name="transaction_from" id="id_transaction_from" class="form-control exchange-input"
+							    placeholder="{{ request.session.convert_to }} Address">
+							<span>
+								<p> {{ form.errors.transaction_from }}</p>
+							</span>
+						</div>
+					</div>
+					
+					<div class="col-sm-12">
+						<div class="form-group bottommargin_0">
+							<label for="name">Amount
+								<span class="required">*</span>
+							</label>
+							<span class="exchange-amount">{{ request.session.amount }}</span>
+							<span>
+								<p> {{ form.errors.amount }}</p>
+							</span>
+						</div>
+					</div>
+					<div class="col-sm-12">
+						<div class="contact-form-submit topmargin_20">
+							<button type="submit" name="contact_submit" class="btn btn-secondary exchange-next">Next</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</section>
+{% endblock %}
